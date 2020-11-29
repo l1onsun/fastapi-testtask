@@ -1,10 +1,14 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from database.crud import Session
+from fastapi import APIRouter
+from uuid import UUID
+
+from database.crud import find_managers
+from .db_manager import db_manager
+
 
 router = APIRouter()
 
-@router.get("/{user_id}")
-async def managers(user_id: str):
-    async with AsyncSession(engine) as session:
-        return {"hello": "world"} # ToDo
+@router.get("/managers/{user_id}")
+async def managers(user_id: UUID):
+    async with db_manager.session() as session:
+        print("before find_manager")
+        return await find_managers(user_id, session=session)

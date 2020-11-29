@@ -20,7 +20,7 @@ fileConfig(config.config_file_name)
 import sys
 sys.path.append('')
 # config dsn from config
-from config.database import database_env
+from config.database_env import database_env
 config.set_main_option('sqlalchemy.url', database_env.postgres_dsn)
 # set metadata for auto-revisions
 from database import orm

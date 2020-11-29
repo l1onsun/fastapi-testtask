@@ -1,4 +1,4 @@
-from .env_base import BaseSettingsEnv
+from ._base_env import BaseSettingsEnv
 from pydantic import Field
 from typing import Optional
 
@@ -7,7 +7,7 @@ class GunicornEnv(BaseSettingsEnv):
     max_workers: int = Field(2, env="MAX_WORKERS")
     web_concurrency: Optional[int] = Field(None, env="WEB_CONCURRENCY")
     host: str = Field("localhost", env="HOST")
-    port: str = Field("80", env="PORT")
+    port: str = Field("8000", env="PORT")
 
     timeout: int = Field(120, env="TIMEOUT")
     keepalive: int = Field(5, env="KEEP_ALIVE")

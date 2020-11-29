@@ -1,4 +1,4 @@
-from config.gunicorn import gunicorn_env
+from config.gunicorn_env import gunicorn_env
 import multiprocessing
 
 

@@ -1,6 +1,10 @@
 alembic
 asyncpg
 fastapi
+gunicorn
 psycopg2
 python-dotenv
 sqlalchemy --pre
+uvicorn
+uvloop
+httptools

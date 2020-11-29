@@ -1,6 +1,6 @@
 help:
 	@echo "usage:"
-	@echo "> make [docker] [command=help] [ENV=.env] [PYTHON=python] [REQ=dev]"
+	@echo "> make [command=help] [ENV=.env] [PYTHON=python]"
 	@echo ""
 	@echo "commands:"
 	@echo "    help			- show this help"
@@ -21,22 +21,29 @@ help:
 	@echo ""
 	@echo "    sort-requirements		- sort lines in requirements"
 
-ENV=.env
 PYTHON=python
 
-DOCKER_NAME=docker-name
+ifeq (docker ,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  DOCKER_COMMANDS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(DOCKER_COMMANDS):;@:)
+endif
 
-scripts = app/* main/* database/* environ/* make/* Dockerfile Makefile
+docker: #docker-up
+	@echo" docker exec $(DOCKER_CONTAINER_NAME) $(DOCKER_COMMANDS) "
 
-docker-check:
-	$(eval DOCKER := True)
+run-gunicorn: #install
+	gunicorn app.main:app -k uvicorn.workers.UvicornWorker -c config/gunicorn_conf.py
 
-docker-build: scripts
-	docker build -t {}
+test:
+	PYTHONPATH=. ENV=config/envs/dev.env pytest -s tests
 
 install:
+	@echo "Running target install..."
 	$(PYTHON) -m make.install requirements.txt
 install-dev:
+	@echo "Running target install-dev..."
 	$(PYTHON) -m make.install requirements_dev.txt
 
 docker-install:
@@ -50,3 +57,6 @@ upgrade:
 	$(PYTHON) -m make.install requirements.txt --upgrade
 upgrade-dev:
 	$(PYTHON) -m make.install requirements_dev.txt --upgrade
+
+# include make/docker_commands.make
+# include make/local_commands.make

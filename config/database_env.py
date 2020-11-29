@@ -1,4 +1,4 @@
-from .env_base import BaseSettingsEnv
+from ._base_env import BaseSettingsEnv
 from pydantic import Field, PostgresDsn, AnyUrl
 
 
