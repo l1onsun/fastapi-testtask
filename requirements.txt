@@ -4,7 +4,7 @@ fastapi
 gunicorn
 psycopg2
 python-dotenv
-sqlalchemy --pre
+sqlalchemy>=1.4.dev
 uvicorn
 uvloop
 httptools

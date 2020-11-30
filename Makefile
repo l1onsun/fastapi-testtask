@@ -49,6 +49,12 @@ install-dev:
 docker-install:
 docker-install-dev:
 
+alembic-upgrade:
+	alembic upgrade head
+
+seed-database:
+	python -m database.seed_to_test
+
 sort-reqs:
 	$(PYTHON) -m make.sort requirements.txt
 	$(PYTHON) -m make.sort requirements_dev.txt

@@ -31,7 +31,7 @@ venv_folder_check = ['venv']
 if __name__ == "__main__":
     args = parse_args()
     
-    if args.check_venv and not in_virtualenv():
+    if args.check_venv and not in_virtualenv() and not os.getenv("IN_DOCKER") == "True":
         print("You are not in virtual environment.")
         venv_found = False
         for venv_folder in venv_folder_check:
