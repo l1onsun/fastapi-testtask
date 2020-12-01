@@ -27,7 +27,7 @@ $ docker-compose --env-file config/envs/compose.test.env run
 $ make run-test-docker
 
 # alternative
-PYTHONPATH=. ENV=config/envs/compose.test.env pytest tests/docker
+$ ENV=config/envs/compose.test.env python -m pytest tests/docker
 ```
 
 ### Запуск локально
