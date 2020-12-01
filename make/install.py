@@ -30,10 +30,11 @@ venv_folder_check = ['venv']
 
 if __name__ == "__main__":
     args = parse_args()
-    
+    venv_found = False
+    venv_folder = 'venv'
     if args.check_venv and not in_virtualenv() and not os.getenv("IN_DOCKER") == "True":
         print("You are not in virtual environment.")
-        venv_found = False
+
         for venv_folder in venv_folder_check:
             if os.path.isdir(venv_folder):
                 pip_path_suppose = os.path.join('.', venv_folder, 'bin', pip_exec)
@@ -47,7 +48,6 @@ if __name__ == "__main__":
         if not venv_found:
             print("Did not found folders:", venv_folder_check)
             if ask_yes_no("Do you want to create venv?"):
-                venv_folder = 'venv'
                 print(f"Creating ./{venv_folder}")
                 subprocess.check_call([sys.executable, "-m", "venv", venv_folder])
                 pip_path_suppose = os.path.join('.', venv_folder, 'bin', pip_exec)
@@ -61,11 +61,14 @@ if __name__ == "__main__":
             sys.exit()
 
     print('Using pip:', pip_exec)
-    
+
     for req in args.reqs:
         if args.upgrade:
             subprocess.check_call([pip_exec, "install", "--upgrade", "-r", req])
         else:
             subprocess.check_call([pip_exec, "install", "-r", req])
+
+    if not venv_found:
+        print(f"Packages installed to ./{venv_folder}. But virtual environment still not active!")
         
     
