@@ -64,7 +64,6 @@ install:
 install-test:
 	@echo "Running target install-test..."
 	$(PYTHON) -m make.install requirements_test.txt
-	$(PYTHON) -m make.install requirements_test.txt
 
 docker-install:
 docker-install-test:
