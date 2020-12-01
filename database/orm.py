@@ -9,13 +9,13 @@ Base = declarative_base()
 
 
 class GlobalRoleEnum(enum.Enum):
-    owner = 0
-    employee = 1
+    owner = "owner"
+    employee = "employee"
 
 
 class ProjectRoleEnum(enum.Enum):
-    admin = 0
-    manager = 1
+    admin = "admin"
+    manager = "manager"
 
 
 class User(Base):
@@ -40,7 +40,9 @@ class Project(Base):
     __tablename__ = 'project'
     id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = sa.Column(sa.String(length=30), nullable=False)
+    company_id = sa.Column(UUID(as_uuid=True), sa.ForeignKey('company.id'))
 
+    company = orm.relationship("Company")
     memberships = orm.relationship("Membership", back_populates="project")
 
 

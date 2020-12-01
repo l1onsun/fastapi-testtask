@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from database import orm
-from database.rod import DatabaseManager
-from database.seed_to_test import drop_and_create
+from database.root import DatabaseManager
+from tests.seed_database import drop_and_create
 
 
 @pytest.fixture()

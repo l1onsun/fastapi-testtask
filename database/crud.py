@@ -1,5 +1,5 @@
 from database import orm
-from database.models import Manager
+from database.models import Manager, DetailManager
 
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -112,3 +112,13 @@ async def find_managers(user_id: UUID, session: AsyncSession) -> Optional[Set[Ma
 
 
     return found_managers
+
+@auto_log
+async def all_managers(session: AsyncSession) -> List[DetailManager]:
+    result = await session.execute(
+        sa.select(orm.User).options(
+            selectinload(orm.User.company),
+            selectinload(orm.User.memberships).selectinload(orm.Membership.project)
+        )
+    )
+    return [DetailManager.from_user(user) for user in result.scalars()]
