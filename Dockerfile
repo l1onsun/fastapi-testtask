@@ -11,7 +11,7 @@ WORKDIR $WORKDIR
 #RUN make upgrade upgrade-dev
 
 RUN pip install -r requirements.txt
-# RUN pip install -r requirements_dev.txt
+# RUN pip install -r requirements_tests.txt
 
 # CMD ['echo', 'abracadabra']
 CMD ['make', 'test', 'run-gunicorn']

@@ -1,4 +1,3 @@
-from database import orm
 from .test_models import *
 
 _g_owner = orm.GlobalRoleEnum.owner

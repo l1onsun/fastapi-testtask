@@ -61,12 +61,13 @@ run-tests-docker:
 install:
 	@echo "Running target install..."
 	$(PYTHON) -m make.install requirements.txt
-install-dev:
-	@echo "Running target install-dev..."
-	$(PYTHON) -m make.install requirements_dev.txt
+install-test:
+	@echo "Running target install-test..."
+	$(PYTHON) -m make.install requirements_test.txt
+	$(PYTHON) -m make.install requirements_test.txt
 
 docker-install:
-docker-install-dev:
+docker-install-test:
 
 alembic-upgrade:
 	alembic upgrade head
@@ -76,12 +77,12 @@ seed-database:
 
 sort-reqs:
 	$(PYTHON) -m make.sort requirements.txt
-	$(PYTHON) -m make.sort requirements_dev.txt
+	$(PYTHON) -m make.sort requirements_test.txt
 
 upgrade:
 	$(PYTHON) -m make.install requirements.txt --upgrade
-upgrade-dev:
-	$(PYTHON) -m make.install requirements_dev.txt --upgrade
+upgrade-test:
+	$(PYTHON) -m make.install requirements_test.txt --upgrade
 
 # include make/docker_commands.make
 # include make/local_commands.make

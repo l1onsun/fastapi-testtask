@@ -1,5 +1,5 @@
 from database import orm
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 import random
 import uuid
