@@ -1,3 +1,5 @@
 httpx
 pytest
 pytest-asyncio
+python-dotenv
+pydantic

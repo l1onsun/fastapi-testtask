@@ -2,20 +2,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 import sqlalchemy as sa
 from sqlalchemy import orm
-import enum
 import uuid
+from .enums import GlobalRoleEnum, ProjectRoleEnum
 
 Base = declarative_base()
 
-
-class GlobalRoleEnum(enum.Enum):
-    owner = "owner"
-    employee = "employee"
-
-
-class ProjectRoleEnum(enum.Enum):
-    admin = "admin"
-    manager = "manager"
 
 
 class User(Base):
