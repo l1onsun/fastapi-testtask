@@ -28,7 +28,7 @@
 Cборка и запуск `docker-compose`:
 
 ```console
-$ make docker-build-test 
+$ make docker-build-test
 $ make docker-up-test
 
 # alternative
@@ -38,9 +38,13 @@ $ docker-compose --env-file config/envs/compose.test.env run
 Тестирование запущенного `docker-compose`:
 
 ```console
+# install test dependensies
+$ make install-test
+# run tests
 $ make run-test-docker
 
 # alternative
+$ pip install -r requirements.txt
 $ ENV=config/envs/compose.test.env python -m pytest tests/docker
 ```
 
@@ -49,10 +53,11 @@ $ ENV=config/envs/compose.test.env python -m pytest tests/docker
 
 Установка библиотек и инициализация базы данных:
 ```console
-$ make install install-dev alembic-upgrade seed-database
+$ make install install-test
+$ make alembic-upgrade seed-database
 
 # alternative
-$ pip install -r requirements.txt -r requirements_dev.txt
+$ pip install -r requirements.txt -r requirements_test.txt
 $ alembic upgrade head
 $ python -m tests.seed_database
 
