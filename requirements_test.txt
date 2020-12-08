@@ -1,7 +1,0 @@
-httpx
-pytest
-pytest-asyncio
-python-dotenv
-
-pydantic
-sqlalchemy>=1.4.dev
