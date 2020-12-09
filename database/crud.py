@@ -34,7 +34,7 @@ async def get_user(user_id: UUID, session: AsyncSession) -> Optional[orm.User]:
 
 
 @auto_log
-async def get_owner_managers(owner: orm.User, session: AsyncSession) -> Set[Manager]:
+async def get_company_managers_by_owner(owner: orm.User, session: AsyncSession) -> Set[Manager]:
     result = await session.execute(
         sa.select(orm.User.id, orm.User.name).where(
             sa.and_(
@@ -46,9 +46,9 @@ async def get_owner_managers(owner: orm.User, session: AsyncSession) -> Set[Mana
 
 
 @auto_log
-async def get_user_admin_memberships(user_id: UUID, project_id=None, session: AsyncSession = ...) \
+async def get_user_admin_memberships(user_id: UUID, projects: List[UUID] = None, session: AsyncSession = ...) \
         -> List[orm.Membership]:
-    if project_id is None:
+    if projects is None:
         stmt = sa.select(orm.Membership).where(
             sa.and_(
                 orm.Membership.user_id == user_id,
@@ -60,21 +60,18 @@ async def get_user_admin_memberships(user_id: UUID, project_id=None, session: As
             sa.and_(
                 orm.Membership.user_id == user_id,
                 orm.Membership.role == orm.ProjectRoleEnum.admin,
-                orm.Membership.project_id == project_id
+                orm.Membership.project_id.in_(projects)
             )
         )
-        # ).options(
-        #     selectinload(orm.Membership.project)  # todo do i need project?
-        # )
     result = await session.execute(stmt)
     return result.scalars().all()
 
 
 @auto_log
-async def get_projects_managers(projects: List[UUID], session: AsyncSession) -> Set[Manager]:
+async def get_managers_in_projects(projects: List[UUID], session: AsyncSession) -> Set[Manager]:
     print("$$$", projects, "$$$")
     result = await session.execute(
-        sa.select([orm.Membership], orm.Membership.project_id.in_(projects))
+        sa.select(orm.Membership).where(orm.Membership.project_id.in_(projects))
             .options(
             selectinload(orm.Membership.user)
         )
@@ -84,25 +81,28 @@ async def get_projects_managers(projects: List[UUID], session: AsyncSession) -> 
 
 
 @auto_log
-async def find_managers(user_id: UUID, project_id=None, session: AsyncSession = ...) -> Optional[Set[Manager]]:
+async def find_managers(user_id: UUID, projects: List[UUID] = None, session: AsyncSession = ...) -> Optional[
+    Set[Manager]]:
     user = await get_user(user_id, session=session)
     if not user:
         return None
 
-    admin_memberships = await get_user_admin_memberships(user_id, project_id=project_id, session=session)
+    admin_memberships = await get_user_admin_memberships(user_id, projects=projects, session=session)
     found_managers: Set[Manager] = set()
 
-    # if user is owner of company: add all company managers to found_managers
-    if user.role == orm.GlobalRoleEnum.owner:
-        managers = await get_owner_managers(user, session=session)
-        found_managers |= managers
-    else:
-        # if user is employee he will found himself
-        found_managers.add(Manager.from_orm(user))
+    # if not None, than, i think, function need to return only members from specified projects
+    if projects is None:
+        # if user is owner of company: add all company managers to found_managers
+        if user.role == orm.GlobalRoleEnum.owner:
+            managers = await get_company_managers_by_owner(user, session=session)
+            found_managers |= managers
+        else:
+            # if user is employee he will found himself
+            found_managers.add(Manager.from_orm(user))
 
-    # check memberships in projects
-    found_managers |= await get_projects_managers([am.project_id for am in admin_memberships],
-                                                  session=session)  # todo: one request
+    # add all managers from proejcts where user admin
+    found_managers |= await get_managers_in_projects(
+        [am.project_id for am in admin_memberships], session=session)
 
     return found_managers
 
