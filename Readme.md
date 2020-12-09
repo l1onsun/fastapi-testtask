@@ -4,10 +4,8 @@
 
 
 ### Комментарий:
-* `make`  
-  Для сокращения команд использовал `make`.  Изначально собирался написать более функциональный `Makefile` для конфигурации проекта. Однако, похоже, `make` оказался не лучшим выбором (неудобно пробрасывать параметры скриптам). Перепишу скрипты на `python` когда дойдут руки (см. `develop` ветку).
-  
-  Все команды буду приводить через `make` и без.
+* `pipenv`  
+  Перешел на [pipenv][https://github.com/pypa/pipenv] для управления зависимостями и упрощения работы с окружением.
 
 * `API`
   - входная точка `/managers/{user_id}` используется для получения списка менеджеров, которых видет пользователь с `user_id` (см. ТЗ)
@@ -22,61 +20,51 @@
   Для запуска `python`-скрипта с нужным окружением: `ENV=path/to/.env python some_script.py`
   
   (Конечено `.env` файлы не должны быть добавлены в репозиторий, так как потенциально содержат секретную информацию. Но так как проект тестовый, я решил их добавить)
+  
+### Установка зависимостей:
+Если отсутсвует `pipenv`:
+```console
+$ pip install pipenv
+```
+Установка необходимых зависимостей:
+```console
+$ pipenv sync --dev
+```
 
 ### Запуск в `docker-compose`
+Установка нужного окружения  (создаст `symlink` `.env`)
+```console
+$ pipenv run switch development docker
+```
 
 Cборка и запуск `docker-compose`:
 
 ```console
-$ make docker-build-test
-$ make docker-up-test
-
-# alternative
-$ docker-compose --env-file config/envs/compose.test.env build
-$ docker-compose --env-file config/envs/compose.test.env run
+$ docker-compose build
+$ docker-compose run
 ```
 Тестирование запущенного `docker-compose`:
 
 ```console
-# install test dependensies
-$ make install-test
-# run tests
-$ make run-test-docker
-
-# alternative
-$ pip install -r requirements.txt
-$ ENV=config/envs/compose.test.env python -m pytest tests/docker
+$ pipenv run pytest
 ```
 
 ### Запуск локально
-Используются  `.env` файлы `config/envs/default.env` и `config/envs/test.env` для тестов.
-
-Установка библиотек и инициализация базы данных:
+Окружение (необходимо отредактировать `config/envs/.env.development`):
 ```console
-$ make install install-test
-$ make alembic-upgrade seed-database
-
-# alternative
-$ pip install -r requirements.txt -r requirements_test.txt
-$ alembic upgrade head
-$ python -m tests.seed_database
-
+$ pipenv run switch development local
+```
+Инициализация базы данных и заполнения тестовыми данными:
+```console
+$ pipenv run database migrate seed-test
 ```
 
 Запуск сервера:
 ```console
-$ make run-gunicorn
-
-# alternative:  
-$ gunicorn app.main:app -k uvicorn.workers.UvicornWorker -c config/gunicorn_conf.py
+$ pipenv run gunicorn
 ```
 
 Запуск тестов:
 ```console
-$ make run-tests-unit
-$ make run-tests-integration
-
-# alternative:
-$ ENV=config/envs/test.env python -m pytest tests/unit
-$ ENV=config/envs/test.env pytest -m pytest tests/integration
+$ pipenv run pytest
 ```
