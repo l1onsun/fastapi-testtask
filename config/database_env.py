@@ -1,4 +1,3 @@
-from ._base_env import BaseSettingsEnv
 from pydantic import Field, PostgresDsn, AnyUrl, validator, BaseSettings
 
 
@@ -6,7 +5,7 @@ class PostgresAsyncDsn(AnyUrl):
     allowed_schemes = {"postgresql+asyncpg"}
     user_required = True
 
-class DatabaseEnv(BaseSettingsEnv):
+class DatabaseEnv(BaseSettings):
     allow_drop_tables: bool = Field(False, env='ALLOW_DROP_TABLES')
 
     postgres_db: str = Field(..., env='POSTGRES_DB')
