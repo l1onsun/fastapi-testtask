@@ -17,5 +17,5 @@ async def list_all_managers():
 @router.get("/managers/{user_id}", response_model=List[Manager])
 async def managers(user_id: UUID, project_id: Optional[List[str]] = Query(None)):
     async with db_manager.session() as session:
-        return await find_managers(user_id, session=session)
+        return await find_managers(user_id, projects=project_id, session=session)
 
