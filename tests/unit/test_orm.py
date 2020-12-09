@@ -6,15 +6,15 @@ from sqlalchemy.orm import selectinload
 
 from database import orm
 from database.root import DatabaseManager
-from tests.seed_database import drop_and_create
+from tests.scripts.seed_database import drop_and_create, seed_database
 
 
 @pytest.fixture()
 async def db_manager() -> DatabaseManager:
     db_manager = DatabaseManager()
     await drop_and_create(db_manager)
-    return db_manager
-
+    yield db_manager
+    await seed_database(db_manager)
 
 @pytest.mark.asyncio
 async def test_single_user(db_manager: DatabaseManager):

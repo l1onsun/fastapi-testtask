@@ -1,5 +1,6 @@
-from .test_data import test_managers, TestManager, test_managers_list
-from tests.test_case_helpers import test_case, get_uuid_set, get_test_uuid_set, test_cases
+from tests.scripts.test_data import test_managers, test_managers_list
+from tests.scripts.test_case_helpers import test_case, get_uuid_set, get_test_uuid_set, test_cases
+
 
 @test_case('/managers/list')
 def check_managers_list(json_managers_list):
