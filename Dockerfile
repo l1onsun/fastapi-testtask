@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-slim
 
 ENV IN_DOCKER=True
 ENV WORKDIR=/app
@@ -6,12 +6,7 @@ ENV WORKDIR=/app
 COPY . $WORKDIR
 WORKDIR $WORKDIR
 
-#RUN apt-get -y update
-#RUN apt-get -y install make
-#RUN make upgrade upgrade-dev
+RUN pip install pipenv
+RUN pipenv install --system --deploy --ignore-pipfile
 
-RUN pip install -r requirements.txt
-# RUN pip install -r requirements_tests.txt
-
-# CMD ['echo', 'abracadabra']
-CMD ['make', 'test', 'run-gunicorn']
+# CMD ["sleep", "300"] # overrideed by docker-compose
