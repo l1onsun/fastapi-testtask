@@ -2,7 +2,7 @@ import os
 import dotenv
 from pydantic import BaseSettings, Field
 
-env_file = os.getenv("ENV", default="config/envs/default.env")
+env_file = os.getenv("ENV", default="config/envs/___default.env")
 
 # print("env_file", env_file)
 # dotenv.load_dotenv(env_file)
