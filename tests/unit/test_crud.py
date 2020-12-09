@@ -1,7 +1,7 @@
 import pytest
 
 from database.root import DatabaseManager
-from tests.seed_database import seed_database
+from tests.scripts.seed_database import seed_database
 
 @pytest.fixture()
 async def db_manager() -> DatabaseManager:

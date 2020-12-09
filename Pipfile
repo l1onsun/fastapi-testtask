@@ -1,0 +1,35 @@
+[scripts]
+switch = "python -m scripts.switch_environment"
+database = "python -m scripts.manage_database"
+pytest = "python -m pytest --ignore=tests/scripts"
+gunicorn = "gunicorn app.main:app -k uvicorn.workers.UvicornWorker -c config/gunicorn_conf.py"
+
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+alembic = "*"
+asyncpg = "*"
+fastapi = "*"
+gunicorn = "*"
+httptools = "*"
+python-dotenv = "*"
+uvicorn = "*"
+uvloop = "*"
+SQLAlchemy = ">=1.4.dev"
+fire = "*"
+psycopg2-binary = "*"
+
+[dev-packages]
+httpx = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-dotenv = "*"
+
+[requires]
+# python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

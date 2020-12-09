@@ -8,10 +8,6 @@ from typing import AsyncContextManager, AsyncIterator
 logger = logging.getLogger(__name__)
 
 
-def engine_factory():
-    return create_async_engine(database_env.postgres_asyncpg_dsn)
-
-
 class AsyncSessionReadonly(AsyncSession):
     @classmethod
     def _raise_readonly_exception(cls, operation: str):
@@ -41,7 +37,6 @@ class DatabaseManager():
         else:
             async with AsyncSessionReadonly(self.engine) as session:
                 yield session
-
 
 # def session_manager_factory(engine: AsyncEngine = engine_factory()):
 #     @asynccontextmanager

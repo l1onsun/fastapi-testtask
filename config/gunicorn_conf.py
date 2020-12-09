@@ -8,7 +8,7 @@ def count_workers():
     else:
         cores = multiprocessing.cpu_count()
         default_web_concurrency = gunicorn_env.workers_per_core * cores
-        workers = max(int(default_web_concurrency), gunicorn_env.max_workers)
+        workers = min(int(default_web_concurrency), gunicorn_env.max_workers)
 
     assert workers > 0
     return workers
