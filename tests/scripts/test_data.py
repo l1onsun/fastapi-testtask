@@ -1,4 +1,4 @@
-from .test_models import *
+from tests.scripts.test_models import *
 
 _g_owner = orm.GlobalRoleEnum.owner
 _g_employee = orm.GlobalRoleEnum.employee

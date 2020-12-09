@@ -4,7 +4,7 @@ import asyncio
 from database import orm
 from database.root import DatabaseManager
 
-from .test_data import TestManager, TestProject, TestCompany
+from tests.scripts.test_data import TestManager, TestProject, TestCompany
 
 async def insert_test_data(db_manager: DatabaseManager):
     async with db_manager.session(write=True) as session:
@@ -33,10 +33,12 @@ async def drop_and_create(db_manager: DatabaseManager):
         await conn.run_sync(orm.Base.metadata.create_all)
 
 
-async def seed_database(db_manager: DatabaseManager):
+async def seed_database(db_manager: DatabaseManager = None):
+    if db_manager is None:
+        db_manager = DatabaseManager()
     await drop_and_create(db_manager)
     await insert_test_data(db_manager)
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_database(DatabaseManager()))
+    asyncio.run(seed_database())
