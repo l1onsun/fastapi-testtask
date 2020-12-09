@@ -13,8 +13,8 @@ class Switch:
         if path is not None:
             self._switch(path)
             exit()
-        self.dev_or_prod = None
-        self.local_or_docker = None
+        self._dev_or_prod = None
+        self._local_or_docker = None
 
     def _switch(self, path):
         if os.path.islink(_env_destination):
@@ -23,38 +23,38 @@ class Switch:
         print(f"Switching to environment: ({path})")
 
     def development(self):
-        assert self.dev_or_prod is None, "input conflict"
-        self.dev_or_prod = "dev"
+        assert self._dev_or_prod is None, "input conflict"
+        self._dev_or_prod = "dev"
         return self
 
     def docker(self):
-        assert self.local_or_docker is None, "input conflict"
-        self.local_or_docker = "docker"
+        assert self._local_or_docker is None, "input conflict"
+        self._local_or_docker = "docker"
         return self
 
     def production(self):
-        assert self.dev_or_prod is None, "input conflict"
-        self.dev_or_prod = "prod"
+        assert self._dev_or_prod is None, "input conflict"
+        self._dev_or_prod = "prod"
         return self
 
     def local(self):
-        assert self.local_or_docker in None, "input conflict"
-        self.local_or_docker = "local"
+        assert self._local_or_docker in None, "input conflict"
+        self._local_or_docker = "local"
         return self
 
     def __call__(self):
-        if self.local_or_docker is None:
-            if self.dev_or_prod is None:
+        if self._local_or_docker is None:
+            if self._dev_or_prod is None:
                 return print(f"current environment: {os.path.realpath(_env_destination)}")
-            self.local_or_docker = "local"
-        if self.dev_or_prod == "dev":
-            if self.local_or_docker == "local":
+            self._local_or_docker = "local"
+        if self._dev_or_prod == "dev":
+            if self._local_or_docker == "local":
                 self._switch(_env_development_local)
-            elif self.local_or_docker == "docker":
+            elif self._local_or_docker == "docker":
                 self._switch(_env_development_docker)
             else:
                 raise ValueError("unknown input")
-        elif self.dev_or_prod == "prod":
+        elif self._dev_or_prod == "prod":
             raise NotImplementedError("Switching to production environment not implemented yet")
         else:
             raise ValueError("should choose: development or production")
