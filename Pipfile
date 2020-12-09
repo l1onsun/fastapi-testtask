@@ -1,9 +1,8 @@
 [scripts]
 switch = "python -m scripts.switch_environment"
 database = "python -m scripts.manage_database"
-pytest = "python -m pytest"
+pytest = "python -m pytest --ignore=tests/scripts"
 gunicorn = "gunicorn app.main:app -k uvicorn.workers.UvicornWorker -c config/gunicorn_conf.py"
-
 
 [[source]]
 url = "https://pypi.org/simple"
