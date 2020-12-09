@@ -7,7 +7,7 @@ class GunicornEnv(BaseSettingsEnv):
     max_workers: int = Field(2, env="MAX_WORKERS")
     web_concurrency: Optional[int] = Field(None, env="WEB_CONCURRENCY")
     host: str = Field("localhost", env="APP_HOST")
-    port: str = Field("8000", env="APP_PORT")
+    port: str = Field("8080", env="APP_PORT")
 
     timeout: int = Field(120, env="GUNICORN_TIMEOUT")
     keepalive: int = Field(5, env="GUNICORN_KEEP_ALIVE")
