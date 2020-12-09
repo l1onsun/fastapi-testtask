@@ -4,7 +4,8 @@ from database.models import Manager, DetailManager
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-import logging; import config.log
+import logging;
+import config.log
 import time
 from typing import Optional, List, Dict, Set
 from uuid import UUID
@@ -41,43 +42,40 @@ async def get_owner_managers(owner: orm.User, session: AsyncSession) -> Set[Mana
                 orm.User.id != owner.id)
         )
     )
-    return {Manager(id=row[0], name=row[1]) for row in result}  # todo is it optimal ?
+    return {Manager(id=row[0], name=row[1]) for row in result}
 
 
 @auto_log
-async def get_user_memberships(user_id: UUID, session: AsyncSession) -> List[orm.Membership]:
-    result = await session.execute(
-        sa.select(orm.Membership).where(
-            orm.Membership.user_id == user_id
-        ).options(
-            selectinload(orm.Membership.project)
+async def get_user_admin_memberships(user_id: UUID, project_id=None, session: AsyncSession = ...) \
+        -> List[orm.Membership]:
+    if project_id is None:
+        stmt = sa.select(orm.Membership).where(
+            sa.and_(
+                orm.Membership.user_id == user_id,
+                orm.Membership.role == orm.ProjectRoleEnum.admin
+            )
         )
-    )
+    else:
+        stmt = sa.select(orm.Membership).where(
+            sa.and_(
+                orm.Membership.user_id == user_id,
+                orm.Membership.role == orm.ProjectRoleEnum.admin,
+                orm.Membership.project_id == project_id
+            )
+        )
+        # ).options(
+        #     selectinload(orm.Membership.project)  # todo do i need project?
+        # )
+    result = await session.execute(stmt)
     return result.scalars().all()
 
 
 @auto_log
-async def get_user_with_memberships(user_id: UUID, session: AsyncSession) -> orm.User:
+async def get_projects_managers(projects: List[UUID], session: AsyncSession) -> Set[Manager]:
+    print("$$$", projects, "$$$")
     result = await session.execute(
-        sa.select(orm.User).where(
-            orm.User.id == user_id
-        ).options(
-            selectinload(orm.User.memberships)
-            # .selectinload(orm.Membership.project) # load project names?
-        )
-    )
-    return result.scalar_one_or_none()
-
-
-@auto_log
-async def get_project_managers(project_id: UUID, session: AsyncSession) -> Set[Manager]:
-    result = await session.execute(
-        sa.select(orm.Membership).where(
-            sa.and_(
-                orm.Membership.project_id == project_id,
-                orm.Membership.role == orm.ProjectRoleEnum.manager
-            )
-        ).options(
+        sa.select([orm.Membership], orm.Membership.project_id.in_(projects))
+            .options(
             selectinload(orm.Membership.user)
         )
     )
@@ -86,13 +84,13 @@ async def get_project_managers(project_id: UUID, session: AsyncSession) -> Set[M
 
 
 @auto_log
-async def find_managers(user_id: UUID, session: AsyncSession) -> Optional[Set[Manager]]:
-    user = await get_user_with_memberships(user_id, session=session)
-    found_managers: Set[Manager] = set()
-
-    # no user with such uuid
+async def find_managers(user_id: UUID, project_id=None, session: AsyncSession = ...) -> Optional[Set[Manager]]:
+    user = await get_user(user_id, session=session)
     if not user:
         return None
+
+    admin_memberships = await get_user_admin_memberships(user_id, project_id=project_id, session=session)
+    found_managers: Set[Manager] = set()
 
     # if user is owner of company: add all company managers to found_managers
     if user.role == orm.GlobalRoleEnum.owner:
@@ -103,15 +101,11 @@ async def find_managers(user_id: UUID, session: AsyncSession) -> Optional[Set[Ma
         found_managers.add(Manager.from_orm(user))
 
     # check memberships in projects
-    for membership in user.memberships:
-        membership: orm.Membership
-        # if user is admin of project: add all project members to found_managers
-        if membership.role is orm.ProjectRoleEnum.admin:
-            managers = await get_project_managers(membership.project_id, session=session)
-            found_managers |= managers
-
+    found_managers |= await get_projects_managers([am.project_id for am in admin_memberships],
+                                                  session=session)  # todo: one request
 
     return found_managers
+
 
 @auto_log
 async def all_managers(session: AsyncSession) -> List[DetailManager]:
