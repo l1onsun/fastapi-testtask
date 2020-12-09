@@ -1,8 +1,7 @@
-from ._base_env import BaseSettingsEnv
-from pydantic import Field
+from pydantic import Field, BaseSettings
 from typing import Optional
 
-class GunicornEnv(BaseSettingsEnv):
+class GunicornEnv(BaseSettings):
     workers_per_core: int = Field(1, env="WORKERS_PER_CORE")
     max_workers: int = Field(2, env="MAX_WORKERS")
     web_concurrency: Optional[int] = Field(None, env="WEB_CONCURRENCY")
