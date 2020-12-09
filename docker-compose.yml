@@ -4,17 +4,18 @@ services:
     restart: always
     build: .
     network_mode: host
-    ports:
-      - $APP_PORT:$APP_PORT
-    command: $DOCKER_APP_RUN_CMD # make run-gunicorn
+#    ports:
+#      - $APP_PORT:$APP_PORT
+    command: $DOCKER_APP_RUN_CMD
     env_file:
-      - $DOCKER_APP_ENV_FILE
+      - .env
     depends_on:
       - db
 
   db:
     image: postgres:12.5-alpine
     restart: always
+#    network_mode: bridge
     volumes:
       - dbvolume:/var/lib/postgresql/data
     environment:
