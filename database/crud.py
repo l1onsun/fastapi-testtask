@@ -69,7 +69,6 @@ async def get_user_admin_memberships(user_id: UUID, projects: List[UUID] = None,
 
 @auto_log
 async def get_managers_in_projects(projects: List[UUID], session: AsyncSession) -> Set[Manager]:
-    print("$$$", projects, "$$$")
     result = await session.execute(
         sa.select(orm.Membership).where(orm.Membership.project_id.in_(projects))
             .options(
