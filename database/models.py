@@ -37,10 +37,14 @@ class DetailManager(BaseModel):
 
     @classmethod
     def from_user(cls, user: User):
+        if user.company is not None:
+            company_name = user.company.name
+        else:
+            company_name = None
         return DetailManager(
             id = user.id,
             name = user.name,
-            company = user.company.name,
+            company = company_name,
             role = user.role,
 
             projects = [DetailProject.from_membership(m) for m in user.memberships]
