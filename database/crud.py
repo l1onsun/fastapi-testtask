@@ -4,7 +4,7 @@ from database.models import Manager, DetailManager
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-import logging;
+import logging
 import config.log
 import time
 from typing import Optional, List, Dict, Set
